@@ -1,6 +1,6 @@
 library(RSelenium)
 library(dplyr)
-rD <- rsDriver(port = as.integer(4739))
+rD <- rsDriver(port = as.integer(4715))
 remDr <- rD[["client"]]
 remDr$navigate("http://www.facebook.com")
 
@@ -39,8 +39,9 @@ lgd <- c("https://www.facebook.com/taras.berezovets",
 
 alerts_facebook <- function(fb_page){
   remDr$navigate(fb_page)
+  name <- getFbName()
   new_post <- getAllPosts(1)
-  new_post[1]
+  c(name,new_post[1])
 }
 
 txt <- get_all_posts(new_post[1],stringr::str_sub(fb_page, start=26))
@@ -51,16 +52,16 @@ alerts_facebook("https://www.facebook.com/taras.berezovets")
 
 exezekutor <- function(lgd){
   z <- lapply(lgd, alerts_facebook)
-  posts <- data.frame(name=gsub("\\/.*","",stringr::str_sub(z, start=26)),link=do.call("rbind", z))
-  posts <- full_join(data.frame(name=gsub("\\/.*","",stringr::str_sub(z, start=26))),posts,by="name")
-  txt <- sapply(ifelse(posts[2]==posts[2],posts[2]," "), as.character)
-  f <- do.call("rbind",lapply(txt[,1],function(x){get_all_posts(x,gsub("\\/.*","",stringr::str_sub(x, start=26)))}))
-  write.csv(f, paste0(gsub(" ","",Sys.Date()),"posts.csv"))
+  data.frame(name=gsub("\\/.*","",stringr::str_sub(z, start=26)),link=do.call("rbind", z))
 }
 
 
-exezekutor(lgd)
+feed <- exezekutor(lgd)
 
+posts <- full_join(data.frame(name=gsub("\\/.*","",stringr::str_sub(z, start=26))),posts,by="name")
+txt <- sapply(ifelse(posts[2]==posts[2],posts[2]," "), as.character)
+f <- do.call("rbind",lapply(txt[,1],function(x){get_all_posts(x,gsub("\\/.*","",stringr::str_sub(x, start=26)))}))
+write.csv(f, paste0(gsub(" ","",Sys.Date()),"posts.csv"))
 
 bs <- getAllPosts(1)
 bs_post <- get_all_posts(bs, "taras.berezovets")
