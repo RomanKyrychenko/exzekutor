@@ -1,95 +1,74 @@
 library(RSelenium)
 library(dplyr)
-rD <- rsDriver(port = as.integer(4715))
-remDr <- rD[["client"]]
-remDr$navigate("http://www.facebook.com")
+library(RJSONIO)
 
-lgd <- c("https://www.facebook.com/taras.berezovets",
-"https://www.facebook.com/sonya.koshkina",
-"https://www.facebook.com/Mustafanayyem",
-"https://www.facebook.com/leshchenko.ukraine",
-"https://www.facebook.com/mixailotkach",
-"https://www.facebook.com/zoryan.zoryan",
-"https://www.facebook.com/VikUkolov",
-"https://www.facebook.com/oleksandr.palii",
-"https://www.facebook.com/tchornovol",
-"https://www.facebook.com/evgen.magda",
-"https://www.facebook.com/dubinskyi",
-"https://www.facebook.com/brtcomua",
-"https://www.facebook.com/applecrysis",
-"https://www.facebook.com/nusspavlo",
-"https://www.facebook.com/arsen.avakov.1",
-"https://www.facebook.com/anton.gerashchenko.7",
-"https://www.facebook.com/den.kazansky",
-"https://www.facebook.com/profile.php?id=100003767320921&fref=ts",
-"https://www.facebook.com/alexey.arestovich",
-"https://www.facebook.com/yuri.biriukov",
-"https://www.facebook.com/dubilet",
-"https://www.facebook.com/valerii.pekar",
-"https://www.facebook.com/yuriy.romanenko",
-"https://www.facebook.com/anatolijsharij",
-"https://www.facebook.com/SaakashviliMikheil",
-"https://www.facebook.com/alex.mochanov",
-"https://www.facebook.com/profile.php?id=100000437913326&fref=ts",
-"https://www.facebook.com/sevgil.musaieva",
-"https://www.facebook.com/e.menendes",
-"https://www.facebook.com/greg.dawis",
-"https://www.facebook.com/ekaterina.roshuk")
+pusk <- function(){
+  rD <- rsDriver(port = as.integer(round(runif(1, 1000,9999))))
+  remDr <- rD[["client"]]
+  remDr$navigate("http://www.facebook.com")
+}
+
+
+#melnykeo94@gmail.com
+#usotrskvn1
 
 
 alerts_facebook <- function(fb_page){
   remDr$navigate(fb_page)
   name <- getFbName()
   new_post <- getAllPosts(1)
-  c(name,new_post[1])
+  c(name,stringr::str_sub(fb_page, start=26),new_post[1])
 }
-
-txt <- get_all_posts(new_post[1],stringr::str_sub(fb_page, start=26))
-txt
-ifelse(is.null(grep("Порошенко", txt))==FALSE,"nema","Alarm")
-
-alerts_facebook("https://www.facebook.com/taras.berezovets")
 
 exezekutor <- function(lgd){
-  z <- lapply(lgd, alerts_facebook)
-  data.frame(name=gsub("\\/.*","",stringr::str_sub(z, start=26)),link=do.call("rbind", z))
+  do.call("rbind",lapply(lgd, alerts_facebook))
 }
 
 
-feed <- exezekutor(lgd)
+jj <- exezekutor(persons)
 
-posts <- full_join(data.frame(name=gsub("\\/.*","",stringr::str_sub(z, start=26))),posts,by="name")
-txt <- sapply(ifelse(posts[2]==posts[2],posts[2]," "), as.character)
-f <- do.call("rbind",lapply(txt[,1],function(x){get_all_posts(x,gsub("\\/.*","",stringr::str_sub(x, start=26)))}))
-write.csv(f, paste0(gsub(" ","",Sys.Date()),"posts.csv"))
+pusk()
 
-bs <- getAllPosts(1)
-bs_post <- get_all_posts(bs, "taras.berezovets")
-https://www.facebook.com/monti.czardas?fref=ts
+for (i in 1:5){
+  jj <- inner_join(data.frame(jj,stringsAsFactors = FALSE),data.frame(exezekutor(persons),stringsAsFactors = FALSE),by=c("X1","X2"))
+  
+  b <- data.frame(link=jj[which((jj[length(jj)]==jj[length(jj)-1])==FALSE),length(jj)], username=jj[which((jj[length(jj)]==jj[length(jj)-1])==FALSE),1],stringsAsFactors = FALSE)
+  
+  f <- get_all_photos(b$link)
+  exportJson <- apply(data.frame(b$username,f$link,f$post,stringsAsFactors = FALSE),1,toJSON)
+  write(exportJson, paste0(as.character(Sys.Date()),"_",substr(as.character(Sys.time()),12,13),"-",substr(as.character(Sys.time()),15,16),"-",substr(as.character(Sys.time()),18,20),".json"))
+}
 
-remDr$navigate("https://www.facebook.com/profile.php?id=100004775745586")
-mil <- getAllPosts(1)
-
-
-remDr$navigate("https://www.facebook.com/nusspavlo")
-nuss <- rbind(nuss[1],getAllPosts(1))
-nuss_post <- get_all_posts(nuss,"nusspavlo")
+,rep(Sys.time(),nrow(f))
 
 
-ifelse(nuss[3]==nuss[1],get_all_posts(nuss[1],"nusspavlo"),print("niichavo"))
+library(httr)
+library("rjson")
+
+json_data <- fromJSON(file="2017-02-06_20-08-36.json")
+
+r <- POST("http://192.168.100.232:9200/fb/post/", 
+          body = exportJson,encode = "json")
+stop_for_status(r)
+content(r, "parsed", "application/json")
+
+print(paste(b$username, "написав новий пост за лінком -",f$link, "Ось його текст:",  f$post))
+exportJson <- toJSON(data.frame(b$username,f$link,f$post,stringsAsFactors = FALSE))
+write(exportJson, paste0(as.character(Sys.Date()),"_",substr(as.character(Sys.time()),12,13),"-",substr(as.character(Sys.time()),15,16),"-",substr(as.character(Sys.time()),18,20),".json"))
 
 
-startpage  = "https://www.facebook.com/taras.berezovets" #enter link to user page here
+library('elastic')
+connect(es_port = 9200)
 
-remDr$navigate(startpage) 
+connect(es_host = <aws_es_endpoint>, es_path = "192.168.100.232", es_port = 9200, es_transport_schema  = "http")
 
+connect(es_host = "192.168.100.232", es_path = "", es_port = 9200, es_transport_schema  = "http")
+Search("fb")
+Search(index="fb", size=1)$hits$hits
+Search(index="fb", type="post", q="что", size=1)$hits$hits
 
-library(stringr)
-str_sub("https://www.facebook.com/taras.berezovets", start=26)
-# stop the selenium server
-rD[["server"]]$stop() 
+docs_bulk(data.frame(b$username,f$link,f$post,stringsAsFactors = FALSE), index="fb", type="post")
 
-# if user forgets to stop server it will be garbage collected.
-rD <- rsDriver()
-rm(rD)
-gc(rD)
+f <- get_all_photos(b$link)
+paste(b$username, "написав новий пост за лінком -",f$link, "Ось його текст:",  f$post)
+
