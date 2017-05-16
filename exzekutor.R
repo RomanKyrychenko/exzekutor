@@ -97,7 +97,7 @@ for (i in 1:100000){
                           domain="facebook.com",
                           dt=paste0(substr(as.character(Sys.time()),1,10),"T",substr(as.character(Sys.time()),12,20),"+0200"),
                           stringsAsFactors = FALSE)
-    es = c("http://13.93.147.221:9200/","http://13.64.64.38:9200","http://13.64.70.94:9200")
+    es = c("http://13.93.147.221:9200","http://13.64.64.38:9200","http://13.64.70.94:9200")
     url_id=unname(sapply(tolower(f$link), md5))
     index_name = paste0("urls_",gsub("-","",as.character(Sys.Date())))
     type_name = "news"
