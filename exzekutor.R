@@ -12,8 +12,17 @@ rD <- rsDriver(port = as.integer(round(runif(1, 1000,9999))),browser = "chrome")
 remDr <- rD[["client"]]
 remDr$navigate("http://www.facebook.com")
 
-#melnykeo94@gmail.com
-#usotrskvn1
+fb_login <- function(){
+  user <- remDr$findElement(using = "id", "email")
+  user$sendKeysToElement(list("login"))
+  pass <- remDr$findElement(using = "id", value = "pass")
+  pass$sendKeysToElement(list("password"))
+  login <- remDr$findElement(using = "css selector", value = ".uiButton.uiButtonConfirm")
+  login$clickElement()
+}
+
+fb_login()
+
 getAP <- function() {
   post <- remDr$findElements(using = "css selector", value = "._5pcq")
   unlist(lapply(post, function(x){x$getElementAttribute("href")}))[1]
