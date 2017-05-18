@@ -6,22 +6,17 @@ library(httr)
 library(RCurl)
 library(openssl)
 
-#start remote driver
-
-rD <- rsDriver(port = as.integer(round(runif(1, 1000,9999))),browser = "chrome")
-remDr <- rD[["client"]]
-remDr$navigate("http://www.facebook.com")
+source("~/persons.R")
 
 fb_login <- function(){
   user <- remDr$findElement(using = "id", "email")
   user$sendKeysToElement(list("login"))
   pass <- remDr$findElement(using = "id", value = "pass")
-  pass$sendKeysToElement(list("password"))
+  pass$sendKeysToElement(list("pass"))
   login <- remDr$findElement(using = "css selector", value = ".uiButton.uiButtonConfirm")
   login$clickElement()
 }
 
-fb_login()
 
 getAP <- function() {
   post <- remDr$findElements(using = "css selector", value = "._5pcq")
@@ -85,35 +80,39 @@ csv_to_json <- function(dat, pretty = F,na = "null",raw = "mongo",digits = 3,for
   return(dat_to_json)
 }
 
-source("~/persons.R")
-
-jj <- exezekutor(persons)
-
-
 for (i in 1:100000){
-  tryCatch({jj <- inner_join(data.frame(jj,stringsAsFactors = FALSE),data.frame(exezekutor(persons),stringsAsFactors = FALSE),by=c("X1","X2"))
-  b <- data.frame(link=jj[which((jj[length(jj)]==jj[length(jj)-1])==FALSE),length(jj)], username=jj[which((jj[length(jj)]==jj[length(jj)-1])==FALSE),1],stringsAsFactors = FALSE)
-  b <- b %>% distinct(link,.keep_all = T)
-  #f <- get_all_photos(b$link)
-  f <- get_content(b$link)
-  f <- f %>% distinct(link,.keep_all = T)
-  if (nrow(f)>0){
-    request <- data.frame(url=f$link,
-                          username=gsub("\n", " ",b$username),
-                          title=paste0(gsub("\n", " ",b$username),": ",substr(f$post,1,75)),
-                          post=gsub("\n", " ",f$post),
-                          dtpost=paste0(substr(as.character(Sys.time()),1,10),"T",substr(as.character(Sys.time()-round(runif(1, 0, 180),0)),12,20),"+0200"),
-                          domain="facebook.com",
-                          dt=paste0(substr(as.character(Sys.time()),1,10),"T",substr(as.character(Sys.time()),12,20),"+0200"),
-                          stringsAsFactors = FALSE)
-    es = c("http://13.93.147.221:9200","http://13.64.64.38:9200","http://13.64.70.94:9200")
-    url_id=unname(sapply(tolower(f$link), md5))
-    index_name = paste0("urls_",gsub("-","",as.character(Sys.Date())))
-    type_name = "news"
-    for (id in 1: nrow(request)) httpPUT(paste(sample(es,1),index_name,type_name,url_id[id],sep="/"), csv_to_json(request[id,]))
-    print(paste("Add request",Sys.time()))
-  }
-  print(paste("worked",Sys.time()))
-  lapply(c("p","act","datr","lu","fr","presence","csm","pl","sb"),remDr$deleteCookieNamed)}, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
-}
+  rD <- rsDriver(port = as.integer(round(runif(1, 1000,9999))),browser = "chrome")
+  remDr <- rD[["client"]]
+  remDr$navigate("http://www.facebook.com")
+  
+  fb_login()
 
+  jj <- exezekutor(persons)
+  
+  for (i in 1:500){
+    tryCatch({jj <- inner_join(data.frame(jj,stringsAsFactors = FALSE),data.frame(exezekutor(persons),stringsAsFactors = FALSE),by=c("X1","X2"))
+    b <- data.frame(link=jj[which((jj[length(jj)]==jj[length(jj)-1])==FALSE),length(jj)], username=jj[which((jj[length(jj)]==jj[length(jj)-1])==FALSE),1],stringsAsFactors = FALSE)
+    b <- b %>% distinct(link,.keep_all = T)
+    #f <- get_all_photos(b$link)
+    f <- get_content(b$link)
+    f <- f %>% distinct(link,.keep_all = T)
+    if (nrow(f)>0){
+      request <- data.frame(url=f$link,
+                            username=gsub("\n", " ",b$username),
+                            title=paste0(gsub("\n", " ",b$username),": ",substr(f$post,1,75)),
+                            post=gsub("\n", " ",f$post),
+                            dtpost=paste0(substr(as.character(Sys.time()),1,10),"T",substr(as.character(Sys.time()-round(runif(1, 0, 180),0)),12,20),"+0200"),
+                            domain="facebook.com",
+                            dt=paste0(substr(as.character(Sys.time()),1,10),"T",substr(as.character(Sys.time()),12,20),"+0200"),
+                            stringsAsFactors = FALSE)
+      es = c("http://13.93.147.221:9200","http://13.64.64.38:9200","http://13.64.70.94:9200")
+      url_id=unname(sapply(tolower(f$link), md5))
+      index_name = paste0("urls_",gsub("-","",as.character(Sys.Date())))
+      type_name = "news"
+      for (id in 1: nrow(request)) httpPUT(paste(sample(es,1),index_name,type_name,url_id[id],sep="/"), csv_to_json(request[id,]))
+      print(paste("Add request",Sys.time()))
+    }
+    print(paste("worked",Sys.time()))
+    lapply(c("p","act","datr","lu","fr","presence","csm","pl","sb"),remDr$deleteCookieNamed)}, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+  }
+}
