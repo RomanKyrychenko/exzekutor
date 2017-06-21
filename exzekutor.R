@@ -8,21 +8,21 @@ library(openssl)
 
 source("~/persons.R")
 
-#fb_login <- function(){
-#  user <- remDr$findElement(using = "id", "email")
-#  user$sendKeysToElement(list("melnykeo94@gmail.com"))
-#  pass <- remDr$findElement(using = "id", value = "pass")
-#  pass$sendKeysToElement(list("usotrskvn1"))
-#  login <- remDr$findElement(using = "css selector", value = ".uiButton.uiButtonConfirm")
-#  login$clickElement()
-#}
-
 fb_login <- function(){
-  user <- remDr$findElement("xpath", '//*[@id="u_0_1"]/div[1]/div/input')
+  user <- remDr$findElement(using = "id", "email")
   user$sendKeysToElement(list("melnykeo94@gmail.com"))
-  pass <- remDr$findElement("xpath",'//*[@id="u_0_2"]')
-  pass$sendKeysToElement(list("usotrskvn1",key="enter"))
+  pass <- remDr$findElement(using = "id", value = "pass")
+  pass$sendKeysToElement(list("usotrskvn1"))
+  login <- remDr$findElement(using = "css selector", value = ".uiButton.uiButtonConfirm")
+  login$clickElement()
 }
+
+#fb_login <- function(){
+#  user <- remDr$findElement("xpath", '//*[@id="u_0_1"]/div[1]/div/input')
+#  user$sendKeysToElement(list("melnykeo94@gmail.com"))
+#  pass <- remDr$findElement("xpath",'//*[@id="u_0_2"]')
+#  pass$sendKeysToElement(list("usotrskvn1",key="enter"))
+#}
 
 
 getAP <- function() {
@@ -59,7 +59,7 @@ get_content <- function(links) {
 }
 
 getFbName <- function() {
-  name <- remDr$findElements(using = "css selector", value = "._8_2")
+  name <- remDr$findElements(using = "css selector", value = "._2nlw")
   unlist(lapply(name, function(x){x$getElementText()}))
 }
 
@@ -88,13 +88,13 @@ csv_to_json <- function(dat, pretty = F,na = "null",raw = "mongo",digits = 3,for
 }
 
 for (i in 1:100000){
-  #rD <- rsDriver(port = as.integer(round(runif(1, 1000,9999))),browser = "chrome")
-  rD <- rsDriver(port = as.integer(round(runif(1, 1000,9999))),browser = "phantomjs")
+  rD <- rsDriver(port = as.integer(round(runif(1, 1000,9999))),browser = "chrome")
+  #rD <- rsDriver(port = as.integer(round(runif(1, 1000,9999))),browser = "phantomjs")
   remDr <- rD[["client"]]
   remDr$navigate("http://www.facebook.com")
   
   fb_login()
-
+  
   jj <- exezekutor(persons)
   
   for (i in 1:500){
@@ -114,7 +114,7 @@ for (i in 1:100000){
                             dt=paste0(substr(as.character(Sys.time()),1,10),"T",substr(as.character(Sys.time()),12,20),"+0200"),
                             stringsAsFactors = FALSE)
       #es = c("http://13.93.147.221:9200","http://13.64.64.38:9200","http://13.64.70.94:9200")
-      es = "http://notifyes:9200"
+      es = "http://13.59.27.188:9200"
       url_id=unname(sapply(tolower(f$link), md5))
       index_name = paste0("urls_",gsub("-","",as.character(Sys.Date())))
       type_name = "news"
