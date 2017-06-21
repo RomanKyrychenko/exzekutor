@@ -6,7 +6,7 @@ library(httr)
 library(RCurl)
 library(openssl)
 
-source("~/persons.R")
+source("https://raw.githubusercontent.com/RomanKyrychenko/exzekutor/master/persons")
 
 fb_login <- function(){
   user <- remDr$findElement(using = "id", "email")
