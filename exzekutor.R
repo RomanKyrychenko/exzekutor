@@ -107,8 +107,9 @@ for (i in 1:100000){
     if (nrow(f)>0){
       request <- data.frame(url=f$link,
                             username=gsub("\n", " ",b$username),
+                            authors=gsub("\n", " ",b$username),
                             title=paste0(gsub("\n", " ",b$username),": ",substr(f$post,1,75)),
-                            post=gsub("\n", " ",f$post),
+                            fullhtml=gsub("\n", " ",f$post),
                             dtpost=paste0(substr(as.character(Sys.time()),1,10),"T",substr(as.character(Sys.time()-round(runif(1, 0, 180),0)),12,20),"+0200"),
                             domain="facebook.com",
                             dt=paste0(substr(as.character(Sys.time()),1,10),"T",substr(as.character(Sys.time()),12,20),"+0200"),
