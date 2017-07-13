@@ -144,3 +144,13 @@ https://www.facebook.com/friendship/alena.kharchenko.50/taras.tsymbal
 
 * Спільні пости
 * Повідомлення на стіні
+
+## Пости
+https://www.facebook.com/search/618295281/stories-by/this-month/date/stories
+https://www.facebook.com/search/618295281/stories/
+
+## Групи
+https://www.facebook.com/search/618295281/groups
+
+## Майбутні заходи
+https://www.facebook.com/search/618295281/events-joined/
