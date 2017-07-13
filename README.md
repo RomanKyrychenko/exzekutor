@@ -138,3 +138,9 @@ https://www.facebook.com/search/618295281/photos-commented/this-month/date/photo
 * Текст коментарів
 * Автори поширень
 * Теги
+
+## Історія відносин
+https://www.facebook.com/friendship/alena.kharchenko.50/taras.tsymbal
+
+* Спільні пости
+* Повідомлення на стіні
