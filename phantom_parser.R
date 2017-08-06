@@ -20,6 +20,13 @@ fb_login <- function(){
   login$clickElement()
 }
 
+csv_to_json <- function(dat, pretty = F,na = "null",raw = "mongo",digits = 3,force = "unclass")
+{
+  dat_to_json <- jsonlite::toJSON(dat,pretty = pretty,na = "null",raw = raw,digits = digits ,force = force )
+  dat_to_json=substr(dat_to_json,start = 2,nchar(dat_to_json)-1) 
+  return(dat_to_json)
+}
+
 alerts_facebook <- function(fb_page){
   remDr$navigate(fb_page)
   post <- read_html(remDr$getPageSource()[[1]]) %>% html_node(css = ".loadedSectionContent")
