@@ -20,13 +20,6 @@ fb_login <- function(){
   login$clickElement()
 }
 
-csv_to_json <- function(dat, pretty = F,na = "null",raw = "mongo",digits = 3,force = "unclass")
-{
-  dat_to_json <- jsonlite::toJSON(dat,pretty = pretty,na = "null",raw = raw,digits = digits ,force = force )
-  dat_to_json=substr(dat_to_json,start = 2,nchar(dat_to_json)-1) 
-  return(dat_to_json)
-}
-
 alerts_facebook <- function(fb_page){
   remDr$navigate(fb_page)
   post <- read_html(remDr$getPageSource()[[1]]) %>% html_node(css = ".loadedSectionContent")
@@ -35,6 +28,11 @@ alerts_facebook <- function(fb_page){
   if(grepl("profile",fb_page)) {fb_page <- paste0("http://www.facebook.com/",substr(fb_page,39,nchar(fb_page)))}
   paste0(gsub("m.facebook.com","www.facebook.com",fb_page),"/posts/",url)
 }
+
+library(parallel)
+
+no_cores <- detectCores() 
+cl <- makeCluster(no_cores)
 
 exezekutor <- function(lgd){
   unlist(lapply(lgd, alerts_facebook))
@@ -66,14 +64,15 @@ for (i in 1:100000){
   rD <- rsDriver(port = as.integer(round(runif(1, 1000,9999))),browser = "phantomjs")
   remDr <- rD[["client"]]
   remDr$navigate("http://www.facebook.com")
-  
   fb_login()
   Sys.sleep(3)
   remDr$navigate("http://www.facebook.com")
-  jj <- exezekutor(gsub("www.facebook.com","m.facebook.com",persons))
+  print(paste("Loaded",Sys.time()))
+  jj <- matrix(exezekutor(gsub("www.facebook.com","m.facebook.com",persons)),nrow=1)
+  print(paste("Executed",Sys.time()))
   for (i in 1:500){
     tryCatch({
-      jj <- rbind(jj,exezekutor(gsub("www.facebook.com","m.facebook.com",persons)))
+      jj <- rbind(jj[nrow(jj),],exezekutor(gsub("www.facebook.com","m.facebook.com",persons)))
       new=na.omit(jj[nrow(jj),(grepl("NA",jj[nrow(jj),]) | grepl("NA",jj[nrow(jj)-1,]))!=(jj[nrow(jj)-1,] != jj[nrow(jj),])])
       if (length(new)>0){
         for(i in 1:length(new)){
@@ -87,6 +86,8 @@ for (i in 1:100000){
         }
       }
       print(paste("worked",Sys.time()))
+      gc()
       lapply(c("p","act","datr","lu","fr","presence","csm","pl","sb"),remDr$deleteCookieNamed)}, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+      system("free | grep Mem | awk '{print $4/$2 * 100.0}'")
   }
 }
