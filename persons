@@ -12,6 +12,10 @@ persons <- c(#?????????????? ????????
   "https://www.facebook.com/LlutsenkoYuri",
   #?????????? ??????????????
   "https://www.facebook.com/Mustafanayyem",
+  "https://www.facebook.com/solvar.com.ua",
+  "https://www.facebook.com/ir.suslova",
+  "https://www.facebook.com/profile.php?id=100001906357165",
+  "https://www.facebook.com/tsvibak?",
   #?????????????????? ?????????? 
   "https://www.facebook.com/pavlo.rizanenko",
   #?????????? ?????????? 
@@ -185,7 +189,8 @@ lgd <- c("https://www.facebook.com/taras.berezovets",
          # "https://www.facebook.com/KashaSaltsova",
          "https://www.facebook.com/profile.php?id=100006204226091",
          "https://www.facebook.com/michael.shchur.3",
-         "https://www.facebook.com/a.durnev", 
+         "https://www.facebook.com/a.durnev",
+	 "https://www.facebook.com/diana.makarova.37",
          # "https://www.facebook.com/komarovskiynet/",
          "https://www.facebook.com/andriy.brodetsky",
          "https://www.facebook.com/muzamax",
