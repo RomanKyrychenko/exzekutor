@@ -343,5 +343,10 @@ lgd <- c("https://www.facebook.com/taras.berezovets",
 	 "https://www.facebook.com/greatlumpen",
 	 "https://www.facebook.com/profile.php?id=100009200484101",
 	 "https://www.facebook.com/kristina.berdinskikh",
+	 "https://www.facebook.com/vhalasiuk",
+	 "https://www.facebook.com/s.v.rybalka",
+	 "https://www.facebook.com/Andriy.Lozovyi",
+	 "https://www.facebook.com/dmytro.linko",
+	 "https://www.facebook.com/s.v.rybalka",
          "https://www.facebook.com/nastya.stanko")
 persons <- unique(c(persons,lgd))
